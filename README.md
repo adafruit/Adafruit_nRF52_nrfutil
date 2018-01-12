@@ -13,17 +13,17 @@ This library is written for Python 2.7.
 Run the following commands to make `nrfutil` available from the command line
 or to development platforms like the Arduino IDE or CircuitPython:
 
+**Notes** : Do **NOT** install nrfutil from the pip package (ex. `sudo pip
+install nrfutil`). The latest nrfutil does not support DFU via Serial, and you
+should install the local copy of 0.5.2 included with the BSP via the `python
+setup.py install` command above.
+
 ### OS X and Linux
 
 ```
 $ sudo pip install -r requirements.txt
 $ sudo python setup.py install
 ```
-
-**Notes** : Do **NOT** install nrfutil from the pip package (ex. `sudo pip
-install nrfutil`). The latest nrfutil does not support DFU via Serial, and you
-should install the local copy of 0.5.2 included with the BSP via the `python
-setup.py install` command above.
 
 ### Windows
 
