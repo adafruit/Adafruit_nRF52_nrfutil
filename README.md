@@ -30,7 +30,7 @@ $ sudo python setup.py install
 - Make sure that you have **Python 2.7** available on your system.
 - Manually install **py2exe version 0.6.9** from this link (selecting
     the 32-bit or 64-bit version depending on your Python installation):
-    (Download py2exe 0.6.9)[https://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/].
+    [Download py2exe 0.6.9](https://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/).
 - From the command prompt, install nrfutil via pip as follows:
 
 ```
