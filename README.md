@@ -15,8 +15,8 @@ or to development platforms like the Arduino IDE or CircuitPython:
 
 **Notes** : Do **NOT** install nrfutil from the pip package (ex. `sudo pip
 install nrfutil`). The latest nrfutil does not support DFU via Serial, and you
-should install version 0.5.2 from a local copy of this repo via the `python
-setup.py install` command detailed below:
+should install version 0.5.2 from a local copy of this repo via the methods
+detailed below:
 
 ### OS X and Linux
 
@@ -26,6 +26,14 @@ $ sudo python setup.py install
 ```
 
 ### Windows
+
+#### Option 1: Pre-Built Binary
+
+A pre-built 32-bit version of nrfutil is included as part of this repo in the
+`binaries/win32` folder. You can use this pre-built binary by adding it to your
+systems `$PATH` variable.
+
+#### Option 2: Build nrfutil from Source
 
 - Make sure that you have **Python 2.7** available on your system.
 - Manually install **py2exe version 0.6.9** from this link (selecting
