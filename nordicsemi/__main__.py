@@ -270,14 +270,18 @@ def update_progress(progress=0, done=False, log_message=""):
               help='Enable flow control, default: disabled',
               type=click.BOOL,
               is_flag=True)
-def serial(package, port, baudrate, flowcontrol):
+@click.option('-sb', '--singlebank',
+              help='Single band bootloader to skip firmware activating delay, default: Dual bank',
+              type=click.BOOL,
+              is_flag=True)
+def serial(package, port, baudrate, flowcontrol, singlebank):
     """Program a device with bootloader that support serial DFU"""
-    serial_backend = DfuTransportSerial(port, baudrate, flowcontrol)
+    serial_backend = DfuTransportSerial(port, baudrate, flowcontrol, singlebank)
     serial_backend.register_events_callback(DfuEvent.PROGRESS_EVENT, update_progress)
     dfu = Dfu(package, dfu_transport=serial_backend)
 
-    click.echo("Upgrading target on {1} with DFU package {0}. Flow control is {2}."
-               .format(package, port, "enabled" if flowcontrol else "disabled"))
+    click.echo("Upgrading target on {1} with DFU package {0}. Flow control is {2}, {3} bank mode"
+               .format(package, port, "enabled" if flowcontrol else "disabled", "Single" if singlebank else "Dual"))
 
     try:
         dfu.dfu_send_images()
@@ -287,8 +291,8 @@ def serial(package, port, baudrate, flowcontrol):
         click.echo("Failed to upgrade target. Error is: {0}".format(e.message))
         click.echo("")
         click.echo("Possible causes:")
-        click.echo("- Bootloader, SoftDevice or Application on target "
-                   "does not match the requirements in the DFU package.")
+        click.echo("- Selected Bootloader version does not match the one on Bluefruit device.")
+        click.echo("    Please upgrade the Bootloader or select correct version in Tools->Bootloader.")
         click.echo("- Baud rate must be 115200, Flow control must be off.")
         click.echo("- Target is not in DFU mode. Ground DFU pin and RESET and release both to enter DFU mode.")
 

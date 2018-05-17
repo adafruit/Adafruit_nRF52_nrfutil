@@ -39,11 +39,18 @@ systems `$PATH` variable.
 - Manually install **py2exe version 0.6.9** from this link (selecting
     the 32-bit or 64-bit version depending on your Python installation):
     [Download py2exe 0.6.9](https://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/).
+- VC compiler for Python (Windows only) (http://www.microsoft.com/en-us/download/confirmation.aspx?id=44266)
 - From the command prompt, install nrfutil via pip as follows:
 
 ```
 pip install -r requirements.txt
 python setup.py install
+```
+
+To generate a self-contained Windows exe version of the utility (Windows only):
+
+```
+python setup.py py2exe
 ```
 
 # Usage
