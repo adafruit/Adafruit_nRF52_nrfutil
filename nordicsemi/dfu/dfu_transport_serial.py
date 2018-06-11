@@ -64,7 +64,7 @@ class DfuTransportSerial(DfuTransport):
     # from bank1 to bank0 (if dual bank) nrfutil need to wait otherwise and re-open serial could cause flash corruption
 
     # T erase page for nrf52832 is (2.05 to 89.7 ms), nrf52840 is ~85 ms max
-    FLASH_PAGE_ERASE_MAX_TIME = 0.085
+    FLASH_PAGE_ERASE_MAX_TIME = 0.0897
 
     # T write word for nrf52832 is (6.7 to 338 us), nrf52840 is ~41 us max
     FLASH_WORD_WRITE_AVG_TIME = 0.000041
@@ -140,7 +140,8 @@ class DfuTransportSerial(DfuTransport):
         time.sleep(DfuTransportSerial.SEND_INIT_PACKET_WAIT_TIME)
 
     def get_erase_wait_time(self):
-        return (((self.total_size)//self.FLASH_PAGE_SIZE)+1)*self.FLASH_PAGE_ERASE_MAX_TIME
+        # timeout is not least than 0.5 seconds
+        return max(0.5 ,(((self.total_size)//self.FLASH_PAGE_SIZE)+1)*self.FLASH_PAGE_ERASE_MAX_TIME)
 
     def get_activate_wait_time(self):
         if (self.single_bank and (self.sd_size == 0)):
