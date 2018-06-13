@@ -25,6 +25,8 @@ $ sudo pip install -r requirements.txt
 $ sudo python setup.py install
 ```
 
+Note: When installing requirements if you encounter issue **Cannot uninstall 'six'. It is a distutils installed project ...** . You may need to add `--ignore-installed six` when running pip.
+
 ### Windows
 
 #### Option 1: Pre-Built Binary
