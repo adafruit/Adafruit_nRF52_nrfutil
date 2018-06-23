@@ -215,7 +215,7 @@ def genpkg(zipfile,
         try:
             # This will parse any string starting with 0x as base 16.
             sd_req_list = sd_req.split(',')
-            sd_req_list = map(int_as_text_to_int, sd_req_list)
+            sd_req_list = list(map(int_as_text_to_int, sd_req_list))
         except ValueError:
             raise nRFException("Could not parse value for --sd-req. "
                                "Hex values should be prefixed with 0x.")

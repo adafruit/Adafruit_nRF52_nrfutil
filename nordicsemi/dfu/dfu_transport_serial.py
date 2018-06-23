@@ -89,7 +89,7 @@ class DfuTransportSerial(DfuTransport):
 
         try:
             self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
-        except Exception, e:
+        except Exception as e:
             raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e.message))
 
         # Wait for the system to reset
@@ -99,7 +99,7 @@ class DfuTransportSerial(DfuTransport):
 
         try:
             self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
-        except Exception, e:
+        except Exception as e:
             raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e.message))
 
         time.sleep(DfuTransportSerial.SERIAL_PORT_OPEN_WAIT_TIME)

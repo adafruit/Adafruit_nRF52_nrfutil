@@ -16,7 +16,7 @@ try:
     from ecdsa.curves import NIST256p
     from ecdsa.keys import sigencode_string
 except Exception:
-    print "Failed to import ecdsa, cannot do signing"
+    print("Failed to import ecdsa, cannot do signing")
 
 from nordicsemi.exceptions import InvalidArgumentException, IllegalStateException
 
@@ -121,13 +121,13 @@ class Signing(object):
 
         vk_x_separated = ""
         vk_x_str = vk_hex[0:64]
-        for i in xrange(0, len(vk_x_str), 2):
+        for i in range(0, len(vk_x_str), 2):
             vk_x_separated += "0x" + vk_x_str[i:i+2] + ", "
         vk_x_separated = vk_x_separated[:-2]
 
         vk_y_separated = ""
         vk_y_str = vk_hex[64:128]
-        for i in xrange(0, len(vk_y_str), 2):
+        for i in range(0, len(vk_y_str), 2):
             vk_y_separated += "0x" + vk_y_str[i:i+2] + ", "
         vk_y_separated = vk_y_separated[:-2]
 
