@@ -42,9 +42,9 @@ import platform
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 #from setuptools_behave import behave_test
+from distutils.core import setup
 
 from nordicsemi import version
-
 if platform.system() == 'Windows':
     import py2exe  # Required even if it is not used in this file. This import adds py2exe to distutils.
 
@@ -91,8 +91,8 @@ setup(
     name="nrfutil",
     version=version.NRFUTIL_VERSION,
     license="Nordic Semicondictor proprietary license",
-    url="https://github.com/NordicSemiconductor/pc-nrfutil",
-    description="Nordic Semiconductor nrfutil utility and Python library",
+    url="https://github.com/adafruit/nRF52_nrfutil",
+    description="Adafruit adaptation to Nordic Semiconductor nrfutil utility and Python library",
     long_description=description,
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=False,
@@ -105,7 +105,7 @@ setup(
     ],
     zip_safe=False,
     classifiers=[
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.5",
     ],
     cmdclass={
         'test': NoseTestCommand
