@@ -91,7 +91,7 @@ class DfuTransportSerial(DfuTransport):
         try:
             self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
         except Exception as e:
-            raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e.message))
+            raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e))
 
         logger.info("Opened serial port %s", self.com_port)
 
@@ -125,9 +125,9 @@ class DfuTransportSerial(DfuTransport):
     def send_init_packet(self, init_packet):
         super(DfuTransportSerial, self).send_init_packet(init_packet)
 
-        frame = int32_to_bytes(DFU_INIT_PACKET)
-        frame += init_packet
-        frame += int16_to_bytes(0x0000)  # Padding required
+        frame = [x for x in int32_to_bytes(DFU_INIT_PACKET)]
+        frame += [chr(x) for x in bytes(init_packet)]
+        frame += [x for x in int16_to_bytes(0x0000)]  # Padding required
 
         packet = HciPacket(frame)
         self.send_packet(packet)
@@ -150,9 +150,9 @@ class DfuTransportSerial(DfuTransport):
     def send_start_dfu(self, mode, softdevice_size=None, bootloader_size=None, app_size=None):
         super(DfuTransportSerial, self).send_start_dfu(mode, softdevice_size, bootloader_size, app_size)
 
-        frame = int32_to_bytes(DFU_START_PACKET)
-        frame += int32_to_bytes(mode)
-        frame += DfuTransport.create_image_size_packet(softdevice_size, bootloader_size, app_size)
+        frame = [x for x in int32_to_bytes(DFU_START_PACKET)]
+        frame += [x for x in int32_to_bytes(mode)]
+        frame += [x for x in DfuTransport.create_image_size_packet(softdevice_size, bootloader_size, app_size)]
 
         packet = HciPacket(frame)
         self.send_packet(packet)
@@ -183,7 +183,9 @@ class DfuTransportSerial(DfuTransport):
         self._send_event(DfuEvent.PROGRESS_EVENT, progress=0, done=False, log_message="")
 
         for i in range(0, len(firmware), DfuTransportSerial.DFU_PACKET_MAX_SIZE):
-            data_packet = HciPacket(int32_to_bytes(DFU_DATA_PACKET) + firmware[i:i + DfuTransportSerial.DFU_PACKET_MAX_SIZE])
+            theframe = [x for x in int32_to_bytes(DFU_DATA_PACKET)]
+            theframe += [chr(x) for x in firmware[i:i + DfuTransportSerial.DFU_PACKET_MAX_SIZE]]
+            data_packet = HciPacket(theframe)
             frames.append(data_packet)
 
         frames_count = len(frames)
@@ -255,7 +257,7 @@ class DfuTransportSerial(DfuTransport):
             raise NordicSemiException("No data received on serial port. Not able to proceed.")
 
         logger.debug("PC <- target: %s", [hex(i) for i in uart_buffer])
-        data = self.decode_esc_chars("".join(chr(x) for x in bytearray(uart_buffer)))
+        data = self.decode_esc_chars(uart_buffer)
 
         # Remove 0xC0 at start and beginning
         data = data[1:-1]
@@ -268,7 +270,7 @@ class DfuTransportSerial(DfuTransport):
         """Replace 0xDBDC with 0xCO and 0xDBDD with 0xDB"""
         result = []
 
-        data = bytearray(data)
+        #data = bytearray(data)
 
         while len(data):
             char = data.pop(0)
@@ -310,7 +312,7 @@ class HciPacket(object):
     def __init__(self, data=''):
         HciPacket.sequence_number = (HciPacket.sequence_number + 1) % 8
         temp_data = []
-        logger.debug("Data "+str(len(data))+": %s", data.encode('utf-8'))
+        logger.debug("Data "+str(len(data))+": %s", data)
         slip_bytes = slip_parts_to_four_bytes(HciPacket.sequence_number,
                                                    DATA_INTEGRITY_CHECK_PRESENT,
                                                    RELIABLE_PACKET,

@@ -84,7 +84,7 @@ TEXT_OR_NONE = TextOrNoneParamType()
               is_flag=True)
 def cli(verbose):
     if verbose:
-        logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+        logging.basicConfig(format='%(message)s', level=logging.INFO)
     else:
         logging.basicConfig(format='%(message)s')
 
