@@ -210,8 +210,8 @@ class DfuTransportSerial(DfuTransport):
 
 
         while not packet_sent:
-            logger.debug("PC -> target: %s" % pkt.data.encode('utf-8'))
-            self.serial_port.write(pkt.data.encode('utf-8'))
+            logger.debug("PC -> target: %s" % pkt)
+            self.serial_port.write(bytearray(pkt.data))
             attempts += 1
             ack = self.get_ack_nr()
 
@@ -309,25 +309,34 @@ class HciPacket(object):
 
     def __init__(self, data=''):
         HciPacket.sequence_number = (HciPacket.sequence_number + 1) % 8
-        self.temp_data = ''
-        self.temp_data += slip_parts_to_four_bytes(HciPacket.sequence_number,
+        temp_data = []
+        logger.debug("Data "+str(len(data))+": %s", data.encode('utf-8'))
+        slip_bytes = slip_parts_to_four_bytes(HciPacket.sequence_number,
                                                    DATA_INTEGRITY_CHECK_PRESENT,
                                                    RELIABLE_PACKET,
                                                    HCI_PACKET_TYPE,
                                                    len(data))
-        self.temp_data += data
+        temp_data += [ord(x) for x in slip_bytes]        
+        print("Add slip preamble:", [hex(i) for i in temp_data])
+
+        temp_data += [ord(x) for x in data]
+        print("Add Data:", [hex(i) for i in temp_data])
+        
         # Add escape characters
-        crc = crc16.calc_crc16(self.temp_data, crc=0xffff)
+        crc = crc16.calc_crc16("".join(chr(x) for x in bytearray(temp_data)) , crc=0xffff)
         logger.info("CRC: %s", hex(crc))
-        self.temp_data += chr(crc & 0xFF)
-        self.temp_data += chr((crc & 0xFF00) >> 8)
+        temp_data.append(crc & 0xFF)
+        temp_data.append((crc & 0xFF00) >> 8)
+        print("Add CRC:", [hex(i) for i in temp_data])
 
-        self.temp_data = slip_encode_esc_chars(self.temp_data)
-
-        self.data = chr(0xc0)
-        self.data += self.temp_data
-        self.data += chr(0xc0)
+        encoded = slip_encode_esc_chars("".join(chr(x) for x in bytearray(temp_data)))
+        temp_data = [ord(x) for x in encoded]
+        print("SLIP encoded:", [hex(i) for i in temp_data])
+        
+        self.data = [0xc0]
+        self.data += temp_data
+        self.data += [0xc0]
+        print("Final packet:", [hex(i) for i in self.data])
 
     def __str__(self):
-        print(str(self.data.encode('utf-8')))
-        return str(self.data.encode('utf-8'))
+        return str([hex(i) for i in self.data])
