@@ -229,12 +229,12 @@ class DfuTransportSerial(DfuTransport):
         def is_timeout(start_time, timeout_sec):
             return not (datetime.now() - start_time <= timedelta(0, timeout_sec))
 
-        uart_buffer = ''
+        uart_buffer = []
         start = datetime.now()
 
-        while uart_buffer.count('\xC0') < 2:
+        while uart_buffer.count(0xC0) < 2:
             # Disregard first of the two C0
-            temp = self.serial_port.read(6)
+            temp = [x for x in self.serial_port.read(6)]
 
             if temp:
                 uart_buffer += temp
@@ -254,8 +254,8 @@ class DfuTransportSerial(DfuTransport):
         if len(uart_buffer) < 2:
             raise NordicSemiException("No data received on serial port. Not able to proceed.")
 
-        logger.debug("PC <- target: {0}".format(binascii.hexlify(uart_buffer)))
-        data = self.decode_esc_chars(uart_buffer)
+        logger.debug("PC <- target: %s", [hex(i) for i in uart_buffer])
+        data = self.decode_esc_chars("".join(chr(x) for x in bytearray(uart_buffer)))
 
         # Remove 0xC0 at start and beginning
         data = data[1:-1]
@@ -317,26 +317,26 @@ class HciPacket(object):
                                                    HCI_PACKET_TYPE,
                                                    len(data))
         temp_data += [ord(x) for x in slip_bytes]        
-        print("Add slip preamble:", [hex(i) for i in temp_data])
+        logger.debug("Add slip preamble: %s", [hex(i) for i in temp_data])
 
         temp_data += [ord(x) for x in data]
-        print("Add Data:", [hex(i) for i in temp_data])
+        logger.debug("Add Data: %s", [hex(i) for i in temp_data])
         
         # Add escape characters
         crc = crc16.calc_crc16("".join(chr(x) for x in bytearray(temp_data)) , crc=0xffff)
-        logger.info("CRC: %s", hex(crc))
+        logger.debug("CRC: %s", hex(crc))
         temp_data.append(crc & 0xFF)
         temp_data.append((crc & 0xFF00) >> 8)
-        print("Add CRC:", [hex(i) for i in temp_data])
+        logger.debug("Add CRC: %s", [hex(i) for i in temp_data])
 
         encoded = slip_encode_esc_chars("".join(chr(x) for x in bytearray(temp_data)))
         temp_data = [ord(x) for x in encoded]
-        print("SLIP encoded:", [hex(i) for i in temp_data])
+        logger.debug("SLIP encoded: %s", [hex(i) for i in temp_data])
         
         self.data = [0xc0]
         self.data += temp_data
         self.data += [0xc0]
-        print("Final packet:", [hex(i) for i in self.data])
+        logger.debug("Final packet: %s", [hex(i) for i in self.data])
 
     def __str__(self):
         return str([hex(i) for i in self.data])
