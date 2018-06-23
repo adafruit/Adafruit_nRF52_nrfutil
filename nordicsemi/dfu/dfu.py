@@ -110,7 +110,7 @@ class Dfu(object):
         """
         buffer_size = 4096
 
-        file_content = ""
+        file_content = bytes()
 
         with open(file_path, 'rb') as binary_file:
             while True:

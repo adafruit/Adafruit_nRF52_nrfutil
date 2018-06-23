@@ -84,7 +84,7 @@ TEXT_OR_NONE = TextOrNoneParamType()
               is_flag=True)
 def cli(verbose):
     if verbose:
-        logging.basicConfig(format='%(message)s', level=logging.INFO)
+        logging.basicConfig(format='%(message)s', level=logging.DEBUG)
     else:
         logging.basicConfig(format='%(message)s')
 
@@ -289,7 +289,7 @@ def serial(package, port, baudrate, flowcontrol, singlebank):
 
     except Exception as e:
         click.echo("")
-        click.echo("Failed to upgrade target. Error is: {0}".format(e.message))
+        click.echo("Failed to upgrade target. Error is: {0}".format(e))
         click.echo("")
         click.echo("Possible causes:")
         click.echo("- Selected Bootloader version does not match the one on Bluefruit device.")

@@ -84,6 +84,7 @@ class DfuTransportSerial(DfuTransport):
         self.sd_size   = 0
         """:type: serial.Serial """
 
+
     def open(self):
         super(DfuTransportSerial, self).open()
 
@@ -91,17 +92,10 @@ class DfuTransportSerial(DfuTransport):
             self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
         except Exception as e:
             raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e.message))
+
+        logger.info("Opened serial port %s", self.com_port)
 
         # Wait for the system to reset
-        time.sleep(DfuTransportSerial.SERIAL_PORT_OPEN_WAIT_TIME)
-    def open(self):
-        super(DfuTransportSerial, self).open()
-
-        try:
-            self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
-        except Exception as e:
-            raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e.message))
-
         time.sleep(DfuTransportSerial.SERIAL_PORT_OPEN_WAIT_TIME)
 
         # Toggle DTR to reset the board and enter DFU mode
@@ -214,10 +208,10 @@ class DfuTransportSerial(DfuTransport):
         last_ack = None
         packet_sent = False
 
-        logger.debug("PC -> target: {0}".format(pkt))
 
         while not packet_sent:
-            self.serial_port.write(pkt.data)
+            logger.debug("PC -> target: %s" % pkt.data.encode('utf-8'))
+            self.serial_port.write(pkt.data.encode('utf-8'))
             attempts += 1
             ack = self.get_ack_nr()
 
@@ -324,7 +318,7 @@ class HciPacket(object):
         self.temp_data += data
         # Add escape characters
         crc = crc16.calc_crc16(self.temp_data, crc=0xffff)
-
+        logger.info("CRC: %s", hex(crc))
         self.temp_data += chr(crc & 0xFF)
         self.temp_data += chr((crc & 0xFF00) >> 8)
 
@@ -335,4 +329,5 @@ class HciPacket(object):
         self.data += chr(0xc0)
 
     def __str__(self):
-        return binascii.hexlify(self.data)
+        print(str(self.data.encode('utf-8')))
+        return str(self.data.encode('utf-8'))
