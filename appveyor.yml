@@ -1,0 +1,42 @@
+environment:
+  matrix:
+    - PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6.4"
+      PYTHON_ARCH: "32"
+
+platform: x86
+
+configuration: Release
+
+init:
+  - cmd: ver
+  - cmd: ECHO Processor architecture - %PROCESSOR_ARCHITECTURE%
+  - cmd: wmic OS get OSArchitecture
+
+  # As AppVeyor has multiple python install, check which one uses by default
+  - cmd: ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%
+  - cmd: python --version
+  - cmd: python -c "import struct; print(struct.calcsize('P') * 8)"
+  - cmd: python -c "import sys; print(sys.executable)"
+
+  # Set the relevant Python and pip location to the path
+  - cmd: set PATH=%PYTHON%;%PYTHON%\scripts;%PATH%
+  - cmd: ECHO Path - %PATH%
+
+  # Verify the new default python
+  - cmd: python --version
+  - cmd: python -c "import struct; print(struct.calcsize('P') * 8)"
+  - cmd: python -c "import sys; print(sys.executable)"
+  - cmd: pip --version
+
+  # Check out installed python packages
+  - cmd: pip freeze
+
+install:
+  # Install Mu Python dependencies
+  - cmd: pip install -r requirements.txt
+  - cmd: pip install pyinstaller
+  # Try building?
+  - cmd: cd nordicsemi
+  - cmd: pip uninstall -y enum34
+  - cmd: pyinstaller __main__.py -F

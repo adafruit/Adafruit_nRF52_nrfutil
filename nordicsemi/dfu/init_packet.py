@@ -82,7 +82,7 @@ class Packet(object):
         # If you got error message AttributeError: 'int' object has no attribute 'value'.
         # Uncomment line 84 and comment out line 85 and run 'python setup.py install'
         #for key in sorted(self.init_packet_fields.keys(), key=lambda x: x):
-        for key in sorted(self.init_packet_fields.keys(), key=lambda x: x.value):
+        for key in sorted(list(self.init_packet_fields.keys()), key=lambda x: x.value):
             # Add length to fields that required that
             if key in [PacketField.REQUIRED_SOFTDEVICES_ARRAY,
                        PacketField.OPT_DATA]:
@@ -100,7 +100,7 @@ class Packet(object):
         # If you got error message AttributeError: 'int' object has no attribute 'value'.
         # Uncomment line 102 and comment out line 103 and run 'python setup.py install'
         #for key in sorted(self.init_packet_fields.keys(), key=lambda x: x):
-        for key in sorted(self.init_packet_fields.keys(), key=lambda x: x.value):
+        for key in sorted(list(self.init_packet_fields.keys()), key=lambda x: x.value):
             if key in [PacketField.DEVICE_TYPE,
                        PacketField.DEVICE_REVISION,
                        ]:

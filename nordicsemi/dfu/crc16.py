@@ -34,10 +34,11 @@ def calc_crc16(binary_data, crc=0xffff):
     :param bytearray binary_data: Array with data to run CRC16 calculation on
     :return int: Calculated CRC value of binary_data
     """
-
+    if not isinstance(binary_data, bytes):
+      raise RuntimeError("calc_crc16 requires bytes input")
     for b in binary_data:
         crc = (crc >> 8 & 0x00FF) | (crc << 8 & 0xFF00)
-        crc ^= ord(b)
+        crc ^= b
         crc ^= (crc & 0x00FF) >> 4
         crc ^= (crc << 8) << 4
         crc ^= ((crc & 0x00FF) << 4) << 1
