@@ -42,5 +42,8 @@ install:
   - cmd: pyinstaller __main__.py -F
   - cmd: mv "dist\\__main__.exe" "dist\\adafruit_nrfutil.exe"
 
+# Not a project with an msbuild file, build done at install.
+build: None
+
 artifacts:
   - path: "dist\\adafruit_nrfutil.exe"
