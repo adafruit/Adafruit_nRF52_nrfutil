@@ -46,4 +46,4 @@ install:
 build: None
 
 artifacts:
-  - path: "C:\\projects\\nrf52-nrfutil\\nordicsemi\\dist\\adafruit_nrfutil.exe"
+  - path: "nordicsemi\\dist\\adafruit_nrfutil.exe"
