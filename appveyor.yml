@@ -40,10 +40,10 @@ install:
   - cmd: cd nordicsemi
   - cmd: pip uninstall -y enum34
   - cmd: pyinstaller __main__.py -F
-  - cmd: mv "dist\__main__.exe" "dist\adafruit_nrfutil.exe"
+  - cmd: mv "dist\\__main__.exe" "dist\\adafruit_nrfutil.exe"
 
 # Not a project with an msbuild file, build done at install.
 build: None
 
 artifacts:
-  - path: "C:\projects\nrf52-nrfutil\nordicsemi\dist\adafruit_nrfutil.exe"
+  - path: "C:\\projects\\nrf52-nrfutil\\nordicsemi\\dist\\adafruit_nrfutil.exe"
