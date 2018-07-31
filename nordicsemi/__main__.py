@@ -30,6 +30,7 @@
 import logging
 import os
 import click
+import sys,traceback
 
 from nordicsemi.dfu.dfu import Dfu
 from nordicsemi.dfu.dfu_transport import DfuEvent
@@ -215,7 +216,7 @@ def genpkg(zipfile,
         try:
             # This will parse any string starting with 0x as base 16.
             sd_req_list = sd_req.split(',')
-            sd_req_list = map(int_as_text_to_int, sd_req_list)
+            sd_req_list = list(map(int_as_text_to_int, sd_req_list))
         except ValueError:
             raise nRFException("Could not parse value for --sd-req. "
                                "Hex values should be prefixed with 0x.")
@@ -289,7 +290,8 @@ def serial(package, port, baudrate, flowcontrol, singlebank):
 
     except Exception as e:
         click.echo("")
-        click.echo("Failed to upgrade target. Error is: {0}".format(e.message))
+        click.echo("Failed to upgrade target. Error is: {0}".format(e))
+        traceback.print_exc(file=sys.stdout)
         click.echo("")
         click.echo("Possible causes:")
         click.echo("- Selected Bootloader version does not match the one on Bluefruit device.")

@@ -84,24 +84,18 @@ class DfuTransportSerial(DfuTransport):
         self.sd_size   = 0
         """:type: serial.Serial """
 
+
     def open(self):
         super(DfuTransportSerial, self).open()
 
         try:
             self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
-        except Exception, e:
-            raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e.message))
+        except Exception as e:
+            raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e))
+
+        logger.info("Opened serial port %s", self.com_port)
 
         # Wait for the system to reset
-        time.sleep(DfuTransportSerial.SERIAL_PORT_OPEN_WAIT_TIME)
-    def open(self):
-        super(DfuTransportSerial, self).open()
-
-        try:
-            self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
-        except Exception, e:
-            raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e.message))
-
         time.sleep(DfuTransportSerial.SERIAL_PORT_OPEN_WAIT_TIME)
 
         # Toggle DTR to reset the board and enter DFU mode
@@ -131,9 +125,9 @@ class DfuTransportSerial(DfuTransport):
     def send_init_packet(self, init_packet):
         super(DfuTransportSerial, self).send_init_packet(init_packet)
 
-        frame = int32_to_bytes(DFU_INIT_PACKET)
-        frame += init_packet
-        frame += int16_to_bytes(0x0000)  # Padding required
+        frame = [x for x in int32_to_bytes(DFU_INIT_PACKET)]
+        frame += [chr(x) for x in bytes(init_packet)]
+        frame += [x for x in int16_to_bytes(0x0000)]  # Padding required
 
         packet = HciPacket(frame)
         self.send_packet(packet)
@@ -156,9 +150,9 @@ class DfuTransportSerial(DfuTransport):
     def send_start_dfu(self, mode, softdevice_size=None, bootloader_size=None, app_size=None):
         super(DfuTransportSerial, self).send_start_dfu(mode, softdevice_size, bootloader_size, app_size)
 
-        frame = int32_to_bytes(DFU_START_PACKET)
-        frame += int32_to_bytes(mode)
-        frame += DfuTransport.create_image_size_packet(softdevice_size, bootloader_size, app_size)
+        frame = [x for x in int32_to_bytes(DFU_START_PACKET)]
+        frame += [x for x in int32_to_bytes(mode)]
+        frame += [x for x in DfuTransport.create_image_size_packet(softdevice_size, bootloader_size, app_size)]
 
         packet = HciPacket(frame)
         self.send_packet(packet)
@@ -189,7 +183,9 @@ class DfuTransportSerial(DfuTransport):
         self._send_event(DfuEvent.PROGRESS_EVENT, progress=0, done=False, log_message="")
 
         for i in range(0, len(firmware), DfuTransportSerial.DFU_PACKET_MAX_SIZE):
-            data_packet = HciPacket(int32_to_bytes(DFU_DATA_PACKET) + firmware[i:i + DfuTransportSerial.DFU_PACKET_MAX_SIZE])
+            theframe = [x for x in int32_to_bytes(DFU_DATA_PACKET)]
+            theframe += [chr(x) for x in firmware[i:i + DfuTransportSerial.DFU_PACKET_MAX_SIZE]]
+            data_packet = HciPacket(theframe)
             frames.append(data_packet)
 
         frames_count = len(frames)
@@ -214,10 +210,10 @@ class DfuTransportSerial(DfuTransport):
         last_ack = None
         packet_sent = False
 
-        logger.debug("PC -> target: {0}".format(pkt))
 
         while not packet_sent:
-            self.serial_port.write(pkt.data)
+            logger.debug("PC -> target: %s" % pkt)
+            self.serial_port.write(bytearray(pkt.data))
             attempts += 1
             ack = self.get_ack_nr()
 
@@ -235,12 +231,12 @@ class DfuTransportSerial(DfuTransport):
         def is_timeout(start_time, timeout_sec):
             return not (datetime.now() - start_time <= timedelta(0, timeout_sec))
 
-        uart_buffer = ''
+        uart_buffer = []
         start = datetime.now()
 
-        while uart_buffer.count('\xC0') < 2:
+        while uart_buffer.count(0xC0) < 2:
             # Disregard first of the two C0
-            temp = self.serial_port.read(6)
+            temp = [x for x in self.serial_port.read(6)]
 
             if temp:
                 uart_buffer += temp
@@ -260,7 +256,7 @@ class DfuTransportSerial(DfuTransport):
         if len(uart_buffer) < 2:
             raise NordicSemiException("No data received on serial port. Not able to proceed.")
 
-        logger.debug("PC <- target: {0}".format(binascii.hexlify(uart_buffer)))
+        logger.debug("PC <- target: %s", [hex(i) for i in uart_buffer])
         data = self.decode_esc_chars(uart_buffer)
 
         # Remove 0xC0 at start and beginning
@@ -274,7 +270,7 @@ class DfuTransportSerial(DfuTransport):
         """Replace 0xDBDC with 0xCO and 0xDBDD with 0xDB"""
         result = []
 
-        data = bytearray(data)
+        #data = bytearray(data)
 
         while len(data):
             char = data.pop(0)
@@ -315,24 +311,34 @@ class HciPacket(object):
 
     def __init__(self, data=''):
         HciPacket.sequence_number = (HciPacket.sequence_number + 1) % 8
-        self.temp_data = ''
-        self.temp_data += slip_parts_to_four_bytes(HciPacket.sequence_number,
+        temp_data = []
+        logger.debug("Data "+str(len(data))+": %s", data)
+        slip_bytes = slip_parts_to_four_bytes(HciPacket.sequence_number,
                                                    DATA_INTEGRITY_CHECK_PRESENT,
                                                    RELIABLE_PACKET,
                                                    HCI_PACKET_TYPE,
                                                    len(data))
-        self.temp_data += data
+        temp_data += [ord(x) for x in slip_bytes]        
+        logger.debug("Add slip preamble: %s", [hex(i) for i in temp_data])
+
+        temp_data += [ord(x) for x in data]
+        logger.debug("Add Data: %s", [hex(i) for i in temp_data])
+        
         # Add escape characters
-        crc = crc16.calc_crc16(self.temp_data, crc=0xffff)
+        crc = crc16.calc_crc16(bytes(temp_data) , crc=0xffff)
+        logger.debug("CRC: %s", hex(crc))
+        temp_data.append(crc & 0xFF)
+        temp_data.append((crc & 0xFF00) >> 8)
+        logger.debug("Add CRC: %s", [hex(i) for i in temp_data])
 
-        self.temp_data += chr(crc & 0xFF)
-        self.temp_data += chr((crc & 0xFF00) >> 8)
-
-        self.temp_data = slip_encode_esc_chars(self.temp_data)
-
-        self.data = chr(0xc0)
-        self.data += self.temp_data
-        self.data += chr(0xc0)
+        encoded = slip_encode_esc_chars("".join(chr(x) for x in bytearray(temp_data)))
+        temp_data = [ord(x) for x in encoded]
+        logger.debug("SLIP encoded: %s", [hex(i) for i in temp_data])
+        
+        self.data = [0xc0]
+        self.data += temp_data
+        self.data += [0xc0]
+        logger.debug("Final packet: %s", [hex(i) for i in self.data])
 
     def __str__(self):
-        return binascii.hexlify(self.data)
+        return str([hex(i) for i in self.data])

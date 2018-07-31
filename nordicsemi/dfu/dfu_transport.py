@@ -42,7 +42,7 @@ class DfuEvent:
     ERROR_EVENT = 3
 
 
-class DfuTransport(object):
+class DfuTransport(object, metaclass=abc.ABCMeta):
     """
     This class as an abstract base class inherited from when implementing transports.
 
@@ -50,7 +50,6 @@ class DfuTransport(object):
     than this class describes. But the intent is that the implementer shall follow the semantic as
     best as she can.
     """
-    __metaclass__ = abc.ABCMeta
 
     @staticmethod
     def create_image_size_packet(softdevice_size=0, bootloader_size=0, app_size=0):
@@ -185,7 +184,7 @@ class DfuTransport(object):
         :param callback: # TODO: add documentation for callback
         :return: None
         """
-        for event_type in self.callbacks.keys():
+        for event_type in list(self.callbacks.keys()):
             if callback in self.callbacks[event_type]:
                 self.callbacks[event_type].remove(callback)
 
@@ -199,6 +198,6 @@ class DfuTransport(object):
         :param args: Arguments to callback function
         :return:
         """
-        if event_type in self.callbacks.keys():
+        if event_type in list(self.callbacks.keys()):
             for callback in self.callbacks[event_type]:
                 callback(**kwargs)
