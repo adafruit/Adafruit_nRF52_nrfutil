@@ -88,11 +88,12 @@ class NoseTestCommand(TestCommand):
 common_requirements=[]
 
 setup(
-    name="nrfutil",
+    name="adafruit-nrfutil",
     version=version.NRFUTIL_VERSION,
     license="Nordic Semicondictor proprietary license",
+    author="Nordic Semiconductor ASA (modified by Adafruit Industries LLC)",
     url="https://github.com/adafruit/nRF52_nrfutil",
-    description="Adafruit adaptation to Nordic Semiconductor nrfutil utility and Python library",
+    description="Nordic Semiconductor nrfutil utility and Python library (modified by Adafruit)",
     long_description=description,
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=False,
@@ -105,8 +106,20 @@ setup(
     ],
     zip_safe=False,
     classifiers=[
-        "Programming Language :: Python :: 3.5",
+        'Intended Audience :: Developers',
+
+        'Operating System :: MacOS',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX :: Linux',
+
+        'Topic :: System :: Networking',
+        'Topic :: System :: Hardware :: Hardware Drivers',
+        'Topic :: Software Development :: Embedded Systems',
+
+        'License :: Other/Proprietary License',
+        'Programming Language :: Python :: 3.5',
     ],
+    keywords='nordic nrf52 ble bluetooth dfu ota softdevice serilaization nrfutil pc-nrfutil adafruit circuitpython',
     cmdclass={
         'test': NoseTestCommand
         # 'bdd_test': behave_test

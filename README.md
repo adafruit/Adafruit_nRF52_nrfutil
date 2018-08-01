@@ -16,7 +16,7 @@ or to development platforms like the Arduino IDE or CircuitPython:
 
 **Notes** : Do **NOT** install nrfutil from the pip package (ex. `sudo pip
 install nrfutil`). The latest nrfutil does not support DFU via Serial, and you
-should install version 0.5.2 from a local copy of this repo via the methods
+should install version 0.5.x from a local copy of this repo via the methods
 detailed below:
 
 ### OS X and Linux
