@@ -4,6 +4,7 @@ _build
 *.orig
 *.pyc
 .env
+*.spec
 build*
 bundles
 *.DS_Store
