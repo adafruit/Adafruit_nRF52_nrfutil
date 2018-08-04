@@ -123,6 +123,6 @@ setup(
     },
     entry_points='''
       [console_scripts]
-      nrfutil = nordicsemi.__main__:cli
+      adafruit_nrfutil = nordicsemi.__main__:cli
     ''',
 )
