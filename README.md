@@ -1,23 +1,24 @@
 # nrfutil
 
-`nrfutil` is a Python package that includes the nrfutil command line utility
-and the nordicsemi library.
+`adafruit-nrfutil` is a Python package that includes the `adafruit_nrfutil` command line utility
+and the `nordicsemi` library.
+
+This package is derived from the Nordic Semiconductor ASA package
+https://github.com/NordicSemiconductor/pc-nrfutil, version 0.5.3.
+THe code has been converted from Python 2 to Python 3.
+
+The executable `nrfutil` has been renamed to `adafruit_nrfutil` to distinguish it from the
+original executable.
 
 This tool can be used used with the [Adafruit nRF52 Feather](https://www.adafruit.com/product/3406)
 to flash firmware images onto the device using the simple serial port.
 
-This library is written for Python 3.5+
-It is no longer Python 2 compatible!
+This library is written for Python 3.5+. It is no longer Python 2 compatible!
 
 # Installation
 
-Run the following commands to make `nrfutil` available from the command line
+Run the following commands to make `adafruit_nrfutil` available from the command line
 or to development platforms like the Arduino IDE or CircuitPython:
-
-**Notes** : Do **NOT** install nrfutil from the pip package (ex. `sudo pip
-install nrfutil`). The latest nrfutil does not support DFU via Serial, and you
-should install version 0.5.x from a local copy of this repo via the methods
-detailed below:
 
 ### OS X and Linux
 
@@ -39,14 +40,16 @@ $ pip3 install -r --user requirements.txt
 $ python3 setup.py install --user
 ```
 
-If you want to install in system directories:
+If you want to install in system directories (generally not recommended):
 ```
 $ cd Adafruit_nRF52_nrfutil
 $ sudo pip3 install -r requirements.txt
 $ sudo python3 setup.py install
 ```
 
-Note: When installing requirements if you encounter issue **Cannot uninstall 'six'. It is a distutils installed project ...** . You may need to add `--ignore-installed six` when running pip.
+Note: When installing requirements if you encounter the message
+**Cannot uninstall 'six'. It is a distutils installed project ...**,
+you may need to add `--ignore-installed six` when running pip.
 
 ### Windows
 
@@ -75,7 +78,7 @@ Copy or move it elsewhere for your convenience, such as directory in your %PATH%
 
 # Usage
 
-To get info on usage of adafruit_nrfutil:
+To get info on the usage of adafruit_nrfutil:
 
 ```
 adafruit_nrfutil --help

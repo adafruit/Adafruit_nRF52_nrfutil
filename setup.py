@@ -89,7 +89,7 @@ setup(
     version=version.NRFUTIL_VERSION,
     license="Nordic Semicondictor proprietary license",
     author="Nordic Semiconductor ASA (modified by Adafruit Industries LLC)",
-    author_email="not_supplied@example.org",
+    author_email="circuitpython@adafruit.com",
     url="https://github.com/adafruit/nRF52_nrfutil",
     description="Nordic Semiconductor nrfutil utility and Python library (modified by Adafruit)",
     long_description=description,
