@@ -102,8 +102,11 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=False,
-    install_requires=common_requirements,
-    setup_requires=common_requirements,
+    install_requires=[
+        "pyserial >= 2.7",
+        "click >= 5.1",
+        "ecdsa >= 0.13",
+    ],
     tests_require=[
         "nose >= 1.3.4",
         "behave"
