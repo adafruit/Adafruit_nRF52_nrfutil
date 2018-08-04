@@ -33,7 +33,6 @@ Setup script for nrfutil.
 
 USAGE:
     python setup.py install
-    python setup.py py2exe
 
 """
 import os
@@ -45,8 +44,6 @@ from setuptools.command.test import test as TestCommand
 from distutils.core import setup
 
 from nordicsemi import version
-if platform.system() == 'Windows':
-    import py2exe  # Required even if it is not used in this file. This import adds py2exe to distutils.
 
 excludes = ["Tkconstants",
             "Tkinter",
@@ -88,25 +85,38 @@ class NoseTestCommand(TestCommand):
 common_requirements=[]
 
 setup(
-    name="nrfutil",
+    name="adafruit-nrfutil",
     version=version.NRFUTIL_VERSION,
     license="Nordic Semicondictor proprietary license",
+    author="Nordic Semiconductor ASA (modified by Adafruit Industries LLC)",
+    author_email="circuitpython@adafruit.com",
     url="https://github.com/adafruit/nRF52_nrfutil",
-    description="Adafruit adaptation to Nordic Semiconductor nrfutil utility and Python library",
+    description="Nordic Semiconductor nrfutil utility and Python library (modified by Adafruit)",
     long_description=description,
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=False,
     install_requires=common_requirements,
     setup_requires=common_requirements,
-    zipfile=None,
     tests_require=[
         "nose >= 1.3.4",
         "behave"
     ],
     zip_safe=False,
     classifiers=[
-        "Programming Language :: Python :: 3.5",
+        'Intended Audience :: Developers',
+
+        'Operating System :: MacOS',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX :: Linux',
+
+        'Topic :: System :: Networking',
+        'Topic :: System :: Hardware :: Hardware Drivers',
+        'Topic :: Software Development :: Embedded Systems',
+
+        'License :: Other/Proprietary License',
+        'Programming Language :: Python :: 3.5',
     ],
+    keywords='nordic nrf52 ble bluetooth dfu ota softdevice serialization nrfutil pc-nrfutil adafruit circuitpython',
     cmdclass={
         'test': NoseTestCommand
         # 'bdd_test': behave_test
@@ -115,19 +125,4 @@ setup(
       [console_scripts]
       nrfutil = nordicsemi.__main__:cli
     ''',
-    console=[{
-        "script": "./nordicsemi/__main__.py",
-        "dest_base": "nrfutil"
-    }],
-    options={
-        "py2exe": {
-            "includes": includes,
-            "excludes": excludes,
-            "ascii": False,
-            "bundle_files": 1,  # 1 for bunding into exe, 3 for to distdir
-            "dist_dir": build_dir,
-            "verbose": True,
-            "dll_excludes": dll_excludes
-        }
-    }
 )

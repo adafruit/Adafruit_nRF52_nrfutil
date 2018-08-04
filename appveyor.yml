@@ -13,7 +13,7 @@ init:
   - cmd: ECHO Processor architecture - %PROCESSOR_ARCHITECTURE%
   - cmd: wmic OS get OSArchitecture
 
-  # As AppVeyor has multiple python install, check which one uses by default
+  # As AppVeyor has multiple python installs, check which one it uses by default
   - cmd: ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%
   - cmd: python --version
   - cmd: python -c "import struct; print(struct.calcsize('P') * 8)"
@@ -36,11 +36,8 @@ install:
   # Install Mu Python dependencies
   - cmd: pip install -r requirements.txt
   - cmd: pip install pyinstaller
-  # Try building?
   - cmd: cd nordicsemi
-  - cmd: pip uninstall -y enum34
-  - cmd: pyinstaller __main__.py -F
-  - cmd: mv "dist\\__main__.exe" "dist\\adafruit_nrfutil.exe"
+  - cmd: pyinstaller __main__.py --onefile --clean --name adafruit_nrfutil
 
 # Not a project with an msbuild file, build done at install.
 build: None

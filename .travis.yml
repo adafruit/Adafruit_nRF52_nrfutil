@@ -1,0 +1,21 @@
+dist: trusty
+sudo: false
+language: python
+python:
+- '3.6'
+cache:
+  pip: true
+
+deploy:
+- provider: pypi
+  user: adafruit-travis
+  on:
+    tags: true
+  password:
+    secure: cH35ZC/rsv+1bCxwGjxjffdkt/PZOP3kDaMOmjhY1asiV+Cjw8Ji9JYGpXeB1AKCayWe0Z4EYnc5TQ4IMklBPt18en4cLotAx8XgKJkv4RXxk25pQ/WEMJRZnCusJpnjmQso1zFzUu03QkNmgvhZiYlEeliaU7/0N3siqKMcDeRBqpn7GGq96q90CVzLXvjhA29rDD5JjjMlwWFOU03cFt+Q2EemWcHa916I2Xaf9IKPyBRE5/xqz+o/OH4MoDpM4I1ktPON/BUzyH5VbND0o8znJSFYBxJrXcHNtIHxK67eTJRXiRVAIMAwDMtvDZkCgDADstBiCAh2Cmp+CE3kNQCmbZ7BC7t6WnbPddcer+dfk2ZrMLBl3HHsgU4t06tOwcXJfXGkEeJjrVmieH9UeoCDHjchGkwtHuquBe7lEP1m6OBsm5pjWdg03xQ+NHWqY1TGs0xI9z/68qHw7Nl6vUKG9JjEq8GYIbp3O/aJJo8owIlOGztXtXT7HuxpXpd8N/uQ3Od+aMvLNx/lBQenmHLtdkrzzP6YHWqkV1fHDLDf0GCS5FZXUkTpL4rIv+GBccRVjheQVySUYstwMnrbKPHXPoe8D9QdwPvwCHzzu/Ai++1r1KB969gHkn9vTLWVJ4NiFAu234QxvfpPl/CxVCgfm/vYZSIZHDHR1l+/DmA=
+
+install:
+- pip install -r requirements.txt
+
+script:
+- python3 setup.py install
