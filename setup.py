@@ -36,6 +36,7 @@ USAGE:
 
 """
 import os
+import os.path
 import platform
 
 from setuptools import setup, find_packages
@@ -69,7 +70,7 @@ dll_excludes = [
     "GDI32.DLL"]
 
 build_dir = os.environ.get("NRFUTIL_BUILD_DIR", "./{}".format(version.NRFUTIL_VERSION))
-description = """A Python package that includes the nrfutil utility and the nordicsemi library"""
+description = """Python 3 version of the Nordic nrfutil utility nordicsemi library (modified by Adafruit)"""
 
 
 class NoseTestCommand(TestCommand):
@@ -84,15 +85,21 @@ class NoseTestCommand(TestCommand):
 
 common_requirements=[]
 
+# Get the long description from the README file
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name="adafruit-nrfutil",
     version=version.NRFUTIL_VERSION,
     license="Nordic Semicondictor proprietary license",
     author="Nordic Semiconductor ASA (modified by Adafruit Industries LLC)",
     author_email="circuitpython@adafruit.com",
-    url="https://github.com/adafruit/nRF52_nrfutil",
-    description="Nordic Semiconductor nrfutil utility and Python library (modified by Adafruit)",
-    long_description=description,
+    url="https://github.com/adafruit/Adafruit_nRF52_nrfutil",
+    description="Python 3 version of Nordic Semiconductor nrfutil utility and Python library (modified by Adafruit)",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=False,
     install_requires=common_requirements,
