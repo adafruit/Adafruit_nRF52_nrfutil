@@ -24,12 +24,6 @@ artifacts:
 
 deploy:
   provider: GitHub
-  description: >
-    Source release and standalone binaries.
-    If Python and pip are installed, you do not need the files here.
-    Instead, on Linux and MacOS, do `pip3 install --user adafruit-nrfutil`
-    On Windows, do `pip install adafruit-nrfutil`.
+  force_update: true
   auth_token:
     secure: tcFElKgzcRzCgpqiJ78WTYNO1FTx4Z8aHV47OxlZIfVkulDr/o81jQZ2aLjirvO5
-  on:
-    appveyor_repo_tag: true
