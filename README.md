@@ -1,13 +1,13 @@
-# nrfutil
+# adafruit-nrfutil
 
-`adafruit-nrfutil` is a Python package that includes the `adafruit_nrfutil` command line utility
+`adafruit-nrfutil` is a Python package that includes the `adafruit-nrfutil` command line utility
 and the `nordicsemi` library.
 
 This package is derived from the Nordic Semiconductor ASA package
 https://github.com/NordicSemiconductor/pc-nrfutil, version 0.5.3.
 THe code has been converted from Python 2 to Python 3.
 
-The executable `nrfutil` has been renamed to `adafruit_nrfutil` to distinguish it from the
+The executable `nrfutil` has been renamed to `adafruit-nrfutil` to distinguish it from the
 original executable.
 
 This tool can be used used with the [Adafruit nRF52 Feather](https://www.adafruit.com/product/3406)
@@ -17,7 +17,7 @@ This library is written for Python 3.5+. It is no longer Python 2 compatible!
 
 # Installation
 
-Run the following commands to make `adafruit_nrfutil` available from the command line
+Run the following commands to make `adafruit-nrfutil` available from the command line
 or to development platforms like the Arduino IDE or CircuitPython:
 
 ### OS X and Linux
@@ -55,7 +55,7 @@ you may need to add `--ignore-installed six` when running pip.
 
 #### Option 1: Pre-Built Binary
 
-A pre-built 32-bit version of adafruit_nrfutil.exe is included as part of this repo in the
+A pre-built 32-bit version of adafruit-nrfutil.exe is included as part of this repo in the
 `binaries/win32` folder. You can use this pre-built binary by adding it to your
 systems `$PATH` variable
 
@@ -71,28 +71,28 @@ pip3 install pyinstaller
 cd Adafruit_nRF52_nrfuil
 pip3 install -r requirements.txt
 cd Adafruit_nRF52_nrfutil\nordicsemi
-pyinstaller __main__.py --onefile --clean --name adafruit_nrfutil
+pyinstaller __main__.py --onefile --clean --name adafruit-nrfutil
 ```
-You will find the .exe in `Adafruit_nRF52_nrfutil\nordicsemi\adafruit_nrfutil.exe`.
+You will find the .exe in `Adafruit_nRF52_nrfutil\nordicsemi\adafruit-nrfutil.exe`.
 Copy or move it elsewhere for your convenience, such as directory in your %PATH%.
 
 # Usage
 
-To get info on the usage of adafruit_nrfutil:
+To get info on the usage of adafruit-nrfutil:
 
 ```
-adafruit_nrfutil --help
+adafruit-nrfutil --help
 ```
 
 To convert an nRF52 .hex file into a DFU pkg file that the serial bootloader
 can make use of:
 
 ```
-adafruit_nrfutil dfu genpkg --dev-type 0x0052 --application firmware.hex dfu-package.zip
+adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application firmware.hex dfu-package.zip
 ```
 
 To flash a DFU pkg file over serial:
 
 ```
-adafruit_nrfutil dfu serial --package dfu-package.zip -p /dev/tty.SLAB_USBtoUART -b 115200
+adafruit-nrfutil dfu serial --package dfu-package.zip -p /dev/tty.SLAB_USBtoUART -b 115200
 ```

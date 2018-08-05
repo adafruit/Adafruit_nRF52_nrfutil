@@ -131,8 +131,9 @@ setup(
         'test': NoseTestCommand
         # 'bdd_test': behave_test
     },
-    entry_points='''
-      [console_scripts]
-      adafruit_nrfutil = nordicsemi.__main__:cli
-    ''',
+    entry_points={
+        'console_scripts': [
+            'adafruit-nrfutil = nordicsemi.__main__:cli',
+            ],
+    },
 )
