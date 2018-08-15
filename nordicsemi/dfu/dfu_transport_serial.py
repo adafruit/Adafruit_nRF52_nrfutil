@@ -52,7 +52,8 @@ class DfuTransportSerial(DfuTransport):
     DEFAULT_FLOW_CONTROL = False
     DEFAULT_SERIAL_PORT_TIMEOUT = 1.0  # Timeout time on serial port read
     SERIAL_PORT_OPEN_WAIT_TIME = 0.1
-    NRF52_RESET_WAIT_TIME = 0.1
+    TOUCH_RESET_WAIT_TIME = 1.5     # Wait time for device into DFU mode
+    DTR_RESET_WAIT_TIME = 0.1
     ACK_PACKET_TIMEOUT = 1.0  # Timeout time for for ACK packet received before reporting timeout through event system
     SEND_INIT_PACKET_WAIT_TIME = 0.5 # 1.0  # Time to wait before communicating with bootloader after init packet is sent
 
@@ -72,12 +73,13 @@ class DfuTransportSerial(DfuTransport):
     FLASH_PAGE_SIZE = 4096                # 4K for nrf52
     DFU_PACKET_MAX_SIZE = 512             # The DFU packet max size
 
-    def __init__(self, com_port, baud_rate=DEFAULT_BAUD_RATE, flow_control=DEFAULT_FLOW_CONTROL, single_bank=False, timeout=DEFAULT_SERIAL_PORT_TIMEOUT):
+    def __init__(self, com_port, baud_rate=DEFAULT_BAUD_RATE, flow_control=DEFAULT_FLOW_CONTROL, single_bank=False, touch=0, timeout=DEFAULT_SERIAL_PORT_TIMEOUT):
         super(DfuTransportSerial, self).__init__()
         self.com_port = com_port
         self.baud_rate = baud_rate
         self.flow_control = 1 if flow_control else 0
         self.single_bank = single_bank
+        self.touch = touch
         self.timeout = timeout
         self.serial_port = None
         self.total_size = 167936 # default is max application size
@@ -88,6 +90,22 @@ class DfuTransportSerial(DfuTransport):
     def open(self):
         super(DfuTransportSerial, self).open()
 
+        # Touch is enabled, disconnect and reconnect
+        if self.touch > 0:
+            try:
+                touch_port = Serial(port=self.com_port, baudrate=self.touch, rtscts=self.flow_control, timeout=self.timeout)
+            except Exception as e:
+                raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e))
+
+            # Wait for serial port stable
+            time.sleep(DfuTransportSerial.SERIAL_PORT_OPEN_WAIT_TIME)
+
+            touch_port.close()
+            logger.info("Touched serial port %s", self.com_port)
+
+            # Wait for device go into DFU mode and fully enumerated
+            time.sleep(DfuTransportSerial.TOUCH_RESET_WAIT_TIME)
+
         try:
             self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
         except Exception as e:
@@ -95,16 +113,17 @@ class DfuTransportSerial(DfuTransport):
 
         logger.info("Opened serial port %s", self.com_port)
 
-        # Wait for the system to reset
+        # Wait for serial port stable
         time.sleep(DfuTransportSerial.SERIAL_PORT_OPEN_WAIT_TIME)
 
-        # Toggle DTR to reset the board and enter DFU mode
-        self.serial_port.setDTR(False)
-        time.sleep(0.05)
-        self.serial_port.setDTR(True)
+        # Toggle DTR to reset the board and enter DFU mode (only if touch is not used)
+        if self.touch == 0:
+            self.serial_port.setDTR(False)
+            time.sleep(0.05)
+            self.serial_port.setDTR(True)
 
-        # Delay to allow device to boot up
-        time.sleep(DfuTransportSerial.NRF52_RESET_WAIT_TIME)
+            # Delay to allow device to boot up
+            time.sleep(DfuTransportSerial.DTR_RESET_WAIT_TIME)
 
     def close(self):
         super(DfuTransportSerial, self).close()

@@ -274,16 +274,21 @@ def update_progress(progress=0, done=False, log_message=""):
 @click.option('-sb', '--singlebank',
               help='Single band bootloader to skip firmware activating delay, default: Dual bank',
               type=click.BOOL,
+              default=False,
               is_flag=True)
+@click.option('-t', '--touch',
+              help='Open port with specified baud then close it, before uploading',
+              type=click.INT,
+              default=0)
 
-def serial(package, port, baudrate, flowcontrol, singlebank):
+def serial(package, port, baudrate, flowcontrol, singlebank, touch):
     """Program a device with bootloader that support serial DFU"""
-    serial_backend = DfuTransportSerial(port, baudrate, flowcontrol, singlebank)
+    serial_backend = DfuTransportSerial(port, baudrate, flowcontrol, singlebank, touch)
     serial_backend.register_events_callback(DfuEvent.PROGRESS_EVENT, update_progress)
     dfu = Dfu(package, dfu_transport=serial_backend)
 
-    click.echo("Upgrading target on {1} with DFU package {0}. Flow control is {2}, {3} bank mode"
-               .format(package, port, "enabled" if flowcontrol else "disabled", "Single" if singlebank else "Dual"))
+    click.echo("Upgrading target on {1} with DFU package {0}. Flow control is {2}, {3} bank, Touch {4}"
+               .format(package, port, "enabled" if flowcontrol else "disabled", "Single" if singlebank else "Dual", touch if touch > 0 else "disabled"))
 
     try:
         dfu.dfu_send_images()
