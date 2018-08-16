@@ -4,8 +4,8 @@
 and the `nordicsemi` library.
 
 This package is derived from the Nordic Semiconductor ASA package
-https://github.com/NordicSemiconductor/pc-nrfutil, version 0.5.3.
-THe code has been converted from Python 2 to Python 3.
+[pc-nrfutil](https://github.com/NordicSemiconductor/pc-nrfutil), version 0.5.3.
+The code has been converted from Python 2 to Python 3.
 
 The executable `nrfutil` has been renamed to `adafruit-nrfutil` to distinguish it from the
 original executable.
@@ -17,8 +17,23 @@ This library is written for Python 3.5+. It is no longer Python 2 compatible!
 
 # Installation
 
+## Prerequisites
+
+- Python3
+- pip3
+
 Run the following commands to make `adafruit-nrfutil` available from the command line
 or to development platforms like the Arduino IDE or CircuitPython:
+
+## Installing from PyPI
+
+This is recommended method, to install latest version
+
+```
+$ pip3 install adafruit-nrfutil --user
+```
+
+## Installing from Source
 
 ### OS X and Linux
 
