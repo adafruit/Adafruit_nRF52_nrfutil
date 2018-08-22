@@ -57,7 +57,7 @@ or is set to try to install in the system directories. In that case use the
 
 ```
 $ pip3 install -r --user requirements.txt
-$ python3 setup.py install --user
+$ python3 setup.py install
 ```
 
 If you want to install in system directories (generally not recommended):
