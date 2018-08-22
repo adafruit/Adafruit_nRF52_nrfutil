@@ -30,7 +30,7 @@ or to development platforms like the Arduino IDE or CircuitPython:
 This is recommended method, to install latest version
 
 ```
-$ pip3 install adafruit-nrfutil --user
+$ pip3 install --user adafruit-nrfutil
 ```
 
 ## Installing from Source
@@ -48,7 +48,7 @@ To install in user space in your home directory:
 
 ```
 $ pip3 install -r requirements.txt
-$ python3 setup.py install --user
+$ python3 setup.py install
 ```
 
 If you get permission errors when running `pip3 install`, your `pip3` is older
