@@ -237,8 +237,10 @@ def genpkg(zipfile,
     package.generate_package(zipfile_path)
 
     log_message = "Zip created at {0}".format(zipfile_path)
-    click.echo(log_message)
-
+    try:
+        click.echo(log_message)
+    except OSError:
+        print(log_message)
 
 global_bar = None
 
