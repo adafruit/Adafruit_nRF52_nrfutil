@@ -209,10 +209,13 @@ class Dfu(object):
 
         self.dfu_transport.send_activate_firmware()
 
+        self.dfu_transport.close()
+
+        # logger.info("Wait after activating %s second", self.get_activate_wait_time())
+        sleep(self.dfu_transport.get_activate_wait_time())
+
         end_time = time()
         logger.info("\nDFU upgrade took {0}s".format(end_time - start_time))
-
-        self.dfu_transport.close()
 
     def dfu_send_images(self):
         """

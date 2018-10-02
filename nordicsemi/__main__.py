@@ -93,7 +93,7 @@ def cli(verbose):
 @cli.command()
 def version():
     """Displays nrf utility version."""
-    click.echo("nrfutil version {}".format(nrfutil_version.NRFUTIL_VERSION))
+    click.echo("adafruit-nrfutil version {}".format(nrfutil_version.NRFUTIL_VERSION))
 
 
 @cli.command(short_help='Generate keys for signing or generate public keys')
@@ -242,17 +242,15 @@ def genpkg(zipfile,
     except OSError:
         print(log_message)
 
-global_bar = None
-
-
 def update_progress(progress=0, done=False, log_message=""):
     del done, log_message  # Unused parameters
-    #global global_bar
-    #if global_bar is None:
-    #    with click.progressbar(length=100) as bar:
-    #        global_bar = bar
-    #global_bar.update(max(1, progress))
-    click.echo('#', nl=False)
+    if progress == 0:
+        return
+
+    if progress % 40 == 0:
+        click.echo('#', nl=True)
+    else:
+        click.echo('#', nl=False)
 
 
 @dfu.command(short_help="Program a device with bootloader that support serial DFU")

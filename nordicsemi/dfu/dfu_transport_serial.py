@@ -55,23 +55,26 @@ class DfuTransportSerial(DfuTransport):
     TOUCH_RESET_WAIT_TIME = 1.5     # Wait time for device into DFU mode
     DTR_RESET_WAIT_TIME = 0.1
     ACK_PACKET_TIMEOUT = 1.0  # Timeout time for for ACK packet received before reporting timeout through event system
-    SEND_INIT_PACKET_WAIT_TIME = 0.5 # 1.0  # Time to wait before communicating with bootloader after init packet is sent
 
-    # SEND_START_DFU_WAIT_TIME = 10.0  # Time to wait before communicating with bootloader after start DFU packet is sent
     # ADADFRUIT:
     # - After Start packet is sent, nrf5x will start to erase flash page, each page takes 2.05 - 89.7 ms
     # nrfutil need to wait accordingly for the image size
-    # - After sending all data -> send command to activate new firmware --> nrf52 erase bank0 and copy image
-    # from bank1 to bank0 (if dual bank) nrfutil need to wait otherwise and re-open serial could cause flash corruption
+    # - (dual bank only) After sending all data -> send command to activate new firmware --> nrf52 erase bank0 and copy image
+    # from bank1 to bank0. nrfutil need to wait else IDE will re-open serial --> causing pin reset -> flash corruption.
 
-    # T erase page for nrf52832 is (2.05 to 89.7 ms), nrf52840 is ~85 ms max
-    FLASH_PAGE_ERASE_MAX_TIME = 0.0897
+    FLASH_PAGE_SIZE = 4096
 
-    # T write word for nrf52832 is (6.7 to 338 us), nrf52840 is ~41 us max
-    FLASH_WORD_WRITE_AVG_TIME = 0.000041
+    # Time to erase a page for nrf52832 is (2.05 to 89.7 ms), nrf52840 is ~85 ms max
+    FLASH_PAGE_ERASE_TIME = 0.0897
 
-    FLASH_PAGE_SIZE = 4096                # 4K for nrf52
-    DFU_PACKET_MAX_SIZE = 512             # The DFU packet max size
+    # Ttime to write word for nrf52832 is (67.5 to 338 us), nrf52840 is ~41 us max
+    FLASH_WORD_WRITE_TIME = 0.000100
+
+    # Time to write a whole page
+    FLASH_PAGE_WRITE_TIME = (FLASH_PAGE_SIZE/4) * FLASH_WORD_WRITE_TIME
+
+    # The DFU packet max size
+    DFU_PACKET_MAX_SIZE = 512
 
     def __init__(self, com_port, baud_rate=DEFAULT_BAUD_RATE, flow_control=DEFAULT_FLOW_CONTROL, single_bank=False, touch=0, timeout=DEFAULT_SERIAL_PORT_TIMEOUT):
         super(DfuTransportSerial, self).__init__()
@@ -150,20 +153,19 @@ class DfuTransportSerial(DfuTransport):
 
         packet = HciPacket(frame)
         self.send_packet(packet)
-        time.sleep(DfuTransportSerial.SEND_INIT_PACKET_WAIT_TIME)
 
     def get_erase_wait_time(self):
         # timeout is not least than 0.5 seconds
-        return max(0.5 ,(((self.total_size)//self.FLASH_PAGE_SIZE)+1)*self.FLASH_PAGE_ERASE_MAX_TIME)
+        return max(0.5, ((self.total_size // self.FLASH_PAGE_SIZE) + 1)*self.FLASH_PAGE_ERASE_TIME)
 
     def get_activate_wait_time(self):
         if (self.single_bank and (self.sd_size == 0)):
             # Single bank and not updating SD+Bootloader, we can skip bank1 -> bank0 delay
             # but still need to delay bootloader setting save (1 flash page)
-            return self.FLASH_PAGE_ERASE_MAX_TIME;
+            return self.FLASH_PAGE_ERASE_TIME + self.FLASH_PAGE_WRITE_TIME;
         else:
             # Activate wait time including time to erase bank0 and transfer bank1 -> bank0
-            write_wait_time = ((self.total_size // 4) + 1) * self.FLASH_WORD_WRITE_AVG_TIME
+            write_wait_time = ((self.total_size // self.FLASH_PAGE_SIZE) + 1) * self.FLASH_PAGE_WRITE_TIME
             return self.get_erase_wait_time() + write_wait_time
 
     def send_start_dfu(self, mode, softdevice_size=None, bootloader_size=None, app_size=None):
@@ -189,9 +191,6 @@ class DfuTransportSerial(DfuTransport):
         # Single bank bootloader could skip this delay if package contains only application firmware
         click.echo("\nActivating new firmware")
 
-        # logger.info("Wait after activating %s second", self.get_activate_wait_time())
-        time.sleep( self.get_activate_wait_time() )
-
     def send_firmware(self, firmware):
         super(DfuTransportSerial, self).send_firmware(firmware)
 
@@ -214,8 +213,13 @@ class DfuTransportSerial(DfuTransport):
             self.send_packet(pkt)
             self._send_event(DfuEvent.PROGRESS_EVENT,
                              log_message="",
-                             progress=progress_percentage(count, frames_count),
+                             progress=count,
                              done=False)
+
+            # After 8 frames (4096 Bytes), nrf5x will erase and write to flash. While erasing/writing to flash
+            # nrf5x's CPU is blocked. We better wait a few ms, just to be safe
+            if count%8 == 0:
+                time.sleep(0.010)
 
         # Send data stop packet
         frame = int32_to_bytes(DFU_STOP_DATA_PACKET)
@@ -228,7 +232,6 @@ class DfuTransportSerial(DfuTransport):
         attempts = 0
         last_ack = None
         packet_sent = False
-
 
         while not packet_sent:
             logger.debug("PC -> target: %s" % pkt)
