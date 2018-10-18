@@ -219,7 +219,10 @@ class DfuTransportSerial(DfuTransport):
             # After 8 frames (4096 Bytes), nrf5x will erase and write to flash. While erasing/writing to flash
             # nrf5x's CPU is blocked. We better wait a few ms, just to be safe
             if count%8 == 0:
-                time.sleep(0.010)
+                time.sleep(DfuTransportSerial.FLASH_PAGE_WRITE_TIME)
+
+        # Wait for last page to write
+        time.sleep(DfuTransportSerial.FLASH_PAGE_WRITE_TIME)
 
         # Send data stop packet
         frame = int32_to_bytes(DFU_STOP_DATA_PACKET)
