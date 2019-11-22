@@ -272,7 +272,7 @@ def update_progress(progress=0, done=False, log_message=""):
               type=click.BOOL,
               is_flag=True)
 @click.option('-sb', '--singlebank',
-              help='Single band bootloader to skip firmware activating delay, default: Dual bank',
+              help='Single bank bootloader to skip firmware activating delay, default: Dual bank',
               type=click.BOOL,
               default=False,
               is_flag=True)
