@@ -19,7 +19,7 @@ jobs:
       env:
         BSP_URL: https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
       run: |
-        python3 install -r requirements.txt
+        pip3 install -r requirements.txt
         python3 setup.py install
         #arduino-cli config init
         #arduino-cli core update-index
