@@ -15,18 +15,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Install
-      env:
-        BSP_URL: https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
+    - name: Install adafruit-nrfutil
       run: |
         pip3 install -r requirements.txt
         python3 setup.py install
-        #arduino-cli config init
-        #arduino-cli core update-index
-        #arduino-cli core update-index --additional-urls $BSP_URL
-        #arduino-cli core install adafruit:nrf52 --additional-urls $BSP_URL
         
-        
-    #- name: Build A Example
-    #  run: |
-        
+    - name: Run Test
+      run: |
+        adafruit-nrfutil version
+        adafruit-nrfutil dfu genpkg --dev-type 0x0052 --sd-req 0x00B6 --application /test/resources/blinky.bin blinky.zip
