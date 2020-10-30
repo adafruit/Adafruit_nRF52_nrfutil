@@ -1,0 +1,32 @@
+name: Build
+
+on: [pull_request, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Install
+      env:
+        BSP_URL: https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
+      run: |
+        python3 install -r requirements.txt
+        python3 setup.py install
+        #arduino-cli config init
+        #arduino-cli core update-index
+        #arduino-cli core update-index --additional-urls $BSP_URL
+        #arduino-cli core install adafruit:nrf52 --additional-urls $BSP_URL
+        
+        
+    #- name: Build A Example
+    #  run: |
+        
