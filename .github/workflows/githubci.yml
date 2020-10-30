@@ -23,4 +23,4 @@ jobs:
     - name: Run Test
       run: |
         adafruit-nrfutil version
-        adafruit-nrfutil dfu genpkg --dev-type 0x0052 --sd-req 0x00B6 --application /test/resources/blinky.bin blinky.zip
+        adafruit-nrfutil dfu genpkg --dev-type 0x0052 --sd-req 0x00B6 --application /tests/resources/blinky.bin blinky.zip
