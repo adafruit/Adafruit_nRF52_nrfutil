@@ -1,0 +1,26 @@
+name: Build
+
+on: [pull_request, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Install adafruit-nrfutil
+      run: |
+        pip3 install -r requirements.txt
+        python3 setup.py install
+        
+    - name: Run Test
+      run: |
+        adafruit-nrfutil version
+        adafruit-nrfutil dfu genpkg --dev-type 0x0052 --sd-req 0x00B6 --application tests/resources/blinky.bin blinky.zip
