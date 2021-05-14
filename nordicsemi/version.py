@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+'#!/usr/bin/env python
 
 # Copyright (c) 2015, Nordic Semiconductor
 # All rights reserved.
@@ -30,4 +30,4 @@
 
 """ Version definition for nrfutil. """
 
-NRFUTIL_VERSION = "0.5.3.post13"
+NRFUTIL_VERSION = "0.5.3.post14"
