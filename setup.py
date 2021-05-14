@@ -104,7 +104,7 @@ setup(
     include_package_data=False,
     install_requires=[
         "pyserial >= 2.7",
-        "click >= 5.1",
+        "click == 7.1.2",
         "ecdsa >= 0.13",
     ],
     tests_require=[
