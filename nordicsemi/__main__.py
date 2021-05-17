@@ -46,6 +46,7 @@ class nRFException(Exception):
 
 
 def int_as_text_to_int(value):
+    value = str(value)
     try:
         if value[:2].lower() == '0x':
             return int(value[2:], 16)
@@ -60,6 +61,7 @@ class BasedIntOrNoneParamType(click.ParamType):
     name = 'Int or None'
 
     def convert(self, value, param, ctx):
+        value = str(value)
         try:
             if value.lower() == 'none':
                 return 'none'

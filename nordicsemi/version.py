@@ -30,4 +30,4 @@
 
 """ Version definition for nrfutil. """
 
-NRFUTIL_VERSION = "0.5.3.post15"
+NRFUTIL_VERSION = "0.5.3.post16"
