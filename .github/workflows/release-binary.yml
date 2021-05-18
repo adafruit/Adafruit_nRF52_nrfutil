@@ -1,0 +1,23 @@
+name: Relase Binaries
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Create binaries
+      run: |
+        pip3 install pyinstaller
+        pip3 install -r requirements.txt
+        cd nordicsemi
+        pyinstaller __main__.py --onefile --clean --name adafruit-nrfutil
