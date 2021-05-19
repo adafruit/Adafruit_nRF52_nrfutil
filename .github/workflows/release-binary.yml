@@ -1,9 +1,12 @@
 name: Relase Binaries
 
-on: [push]
+on:
+  release:
+    types:
+      - created
 
 jobs:
-  build:
+  windows:
     runs-on: windows-latest
     
     steps:
@@ -21,3 +24,15 @@ jobs:
         pip3 install -r requirements.txt
         cd nordicsemi
         pyinstaller __main__.py --onefile --clean --name adafruit-nrfutil
+        zip ../adafruit-nrfutil--${{ github.event.release.tag_name }}-win.zip dist/adafruit-nrfutil/adafruit-nrfutil.exe
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: ${{ github.event_name == 'release' }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: adafruit-nrfutil--${{ github.event.release.tag_name }}-win.zip
+        asset_name: adafruit-nrfutil--${{ github.event.release.tag_name }}-win.zip
+        asset_content_type: application/zip
