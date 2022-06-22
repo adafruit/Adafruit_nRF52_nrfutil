@@ -33,15 +33,15 @@ logger = logging.getLogger(__name__)
 
 class Slip(object):
     def __init__(self):
-        self.SLIP_END = '\xc0'
-        self.SLIP_ESC = '\xdb'
-        self.SLIP_ESC_END = '\xdc'
-        self.SLIP_ESC_ESC = '\xdd'
+        self.SLIP_END = b'\xc0'
+        self.SLIP_ESC = b'\xdb'
+        self.SLIP_ESC_END = b'\xdc'
+        self.SLIP_ESC_ESC = b'\xdd'
 
         self.started = False
         self.escaped = False
-        self.stream = ''
-        self.packet = ''
+        self.stream = b''
+        self.packet = b''
 
     def append(self, data):
         """
@@ -60,15 +60,16 @@ class Slip(object):
         packet_list = list()
 
         for char in self.stream:
+            char = bytes([char])
             if char == self.SLIP_END:
                 if self.started:
                     if len(self.packet) > 0:
                         self.started = False
                         packet_list.append(self.packet)
-                        self.packet = ''
+                        self.packet = b''
                 else:
                     self.started = True
-                    self.packet = ''
+                    self.packet = b''
             elif char == self.SLIP_ESC:
                 self.escaped = True
             elif char == self.SLIP_ESC_END:
@@ -86,7 +87,7 @@ class Slip(object):
             else:
                 if self.escaped:
                     logging.error("Error in SLIP packet, ignoring error.")
-                    self.packet = ''
+                    self.packet = b''
                     self.escaped = False
                 else:
                     self.packet += char

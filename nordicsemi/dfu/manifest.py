@@ -116,8 +116,14 @@ class ManifestGenerator(object):
 
             return dict((k, remove_none_entries(v)) for k, v in d.items() if v is not None)
 
+        def _try(o):
+            try:
+                return o.__dict__
+            except:
+                return o.decode("ascii")
+
         return json.dumps({'manifest': self.manifest},
-                          default=lambda o: remove_none_entries(o.__dict__),
+                          default=lambda o: remove_none_entries(_try(o)),
                           sort_keys=True, indent=4,
                           separators=(',', ': '))
 

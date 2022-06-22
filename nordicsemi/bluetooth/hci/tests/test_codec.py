@@ -41,22 +41,20 @@ class TestInitPacket(unittest.TestCase):
         # These are packets read from Device Monitoring Studio
         # during communication between serializer application and firmware
         read_packets = [
-            " C0 10 00 00 F0 C0 C0 D1 6E 00 C1 01 86 00 00 00 00 17 63 C0",
-            " C0 D2 DE 02 4E 02 1B 00 FF FF 01 17 FE B4 9A 9D E1 B0 F8 02"
-            " 01 06 11 07 1B C5 D5 A5 02 00 A9 B7 E2 11 A4 C6 00 FE E7 74"
-            " 09 09 49 44 54 57 32 31 38 48 5A BB C0",
-            " C0 D3 EE 00 3F 02 1B 00 FF FF 01 17 FE B4 9A 9D E1 AF 01 F1 62 C0",
-            " C0 D4 DE 02 4C 02 1B 00 FF FF 01 17 FE B4 9A 9D E1 B1 F8 02 01 06"
-            " 11 07 1B C5 D5 A5 02 00 A9 B7 E2 11 A4 C6 00 FE E7 74 09 09 49 44 54 57 32 31 38 48 6E C8 C0"
+            b'\xC0\x10\x00\x00\xF0\xC0\xC0\xD1\x6E\x00\xC1\x01\x86\x00\x00\x00\x00\x17\x63\xC0',
+            b'\xC0\xD2\xDE\x02\x4E\x02\x1B\x00\xFF\xFF\x01\x17\xFE\xB4\x9A\x9D\xE1\xB0\xF8\x02'
+            b'\x01\x06\x11\x07\x1B\xC5\xD5\xA5\x02\x00\xA9\xB7\xE2\x11\xA4\xC6\x00\xFE\xE7\x74'
+            b'\x09\x09\x49\x44\x54\x57\x32\x31\x38\x48\x5A\xBB\xC0',
+            b'\xC0\xD3\xEE\x00\x3F\x02\x1B\x00\xFF\xFF\x01\x17\xFE\xB4\x9A\x9D\xE1\xAF\x01\xF1\x62\xC0',
+            b'\xC0\xD4\xDE\x02\x4C\x02\x1B\x00\xFF\xFF\x01\x17\xFE\xB4\x9A\x9D\xE1\xB1\xF8\x02\x01\x06'
+            b'\x11\x07\x1B\xC5\xD5\xA5\x02\x00\xA9\xB7\xE2\x11\xA4\xC6\x00\xFE\xE7\x74\x09\x09\x49\x44\x54\x57\x32\x31\x38\x48\x6E\xC8\xC0'
         ]
 
         slip = Slip()
         output = list()
 
         for uart_packet in read_packets:
-            hex_string = uart_packet.replace(" ", "")
-            hex_data = hex_string.decode("hex")
-            slip.append(hex_data)
+            slip.append(uart_packet)
 
         packets = slip.decode()
 
