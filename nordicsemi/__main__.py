@@ -305,8 +305,7 @@ def serial(package, port, baudrate, flowcontrol, singlebank, touch):
         click.echo("    Please upgrade the Bootloader or select correct version in Tools->Bootloader.")
         click.echo("- Baud rate must be 115200, Flow control must be off.")
         click.echo("- Target is not in DFU mode. Ground DFU pin and RESET and release both to enter DFU mode.")
-
-        return False
+        sys.exit(1)
 
     click.echo("Device programmed.")
 
