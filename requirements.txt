@@ -2,3 +2,4 @@
     click >= 5.1
     ecdsa >= 0.13
     behave
+    setuptools	

@@ -31,18 +31,18 @@ class Signing(object):
         """
         self.sk = SigningKey.generate(curve=NIST256p)
 
-        with open(filename, "w") as sk_file:
-            sk_file.write(self.sk.to_pem().decode("ascii"))
+        with open(filename, "wb") as sk_file:
+            sk_file.write(self.sk.to_pem(format="pkcs8"))
 
     def load_key(self, filename):
         """
         Load signing key (from pem file)
         """
-        with open(filename, "r") as sk_file:
+        with open(filename, "rb") as sk_file:
             sk_pem = sk_file.read()
 
         self.sk = SigningKey.from_pem(sk_pem)
-        sk_hex = self.sk.to_string().hex()
+        # sk_hex = self.sk.to_string().hex()
 
     def sign(self, init_packet_data):
         """
