@@ -34,7 +34,7 @@ import logging
 import click
 
 # Python 3rd party imports
-from serial import Serial
+from serial import Serial, serial_for_url
 
 # Nordic Semiconductor imports
 from nordicsemi.dfu.util import slip_parts_to_four_bytes, slip_encode_esc_chars, int16_to_bytes, int32_to_bytes
@@ -96,7 +96,11 @@ class DfuTransportSerial(DfuTransport):
         # Touch is enabled, disconnect and reconnect
         if self.touch > 0:
             try:
-                touch_port = Serial(port=self.com_port, baudrate=self.touch, rtscts=self.flow_control, timeout=self.timeout)
+                touch_port = None
+                if "://" in self.com_port:
+                    touch_port = serial_for_url(self.com_port, baudrate=self.touch, rtscts=self.flow_control, timeout=self.timeout)
+                else:
+                    touch_port = Serial(port=self.com_port, baudrate=self.touch, rtscts=self.flow_control, timeout=self.timeout)
             except Exception as e:
                 raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e))
 
@@ -110,7 +114,10 @@ class DfuTransportSerial(DfuTransport):
             time.sleep(DfuTransportSerial.TOUCH_RESET_WAIT_TIME)
 
         try:
-            self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
+            if "://" in self.com_port:
+                self.serial_port = serial_for_url(self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
+            else:
+                self.serial_port = Serial(port=self.com_port, baudrate=self.baud_rate, rtscts=self.flow_control, timeout=self.timeout)
         except Exception as e:
             raise NordicSemiException("Serial port could not be opened on {0}. Reason: {1}".format(self.com_port, e))
 
