@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.6'
+          cache: pip
+
+      - run: pip install --upgrade pip setuptools
+
+      - run: pip install -r requirements.txt
+
+      - run: python3 setup.py install
+
+      - if: startsWith(github.ref, 'refs/tags/')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: adafruit-travis
+          password: cH35ZC/rsv+1bCxwGjxjffdkt/PZOP3kDaMOmjhY1asiV+Cjw8Ji9JYGpXeB1AKCayWe0Z4EYnc5TQ4IMklBPt18en4cLotAx8XgKJkv4RXxk25pQ/WEMJRZnCusJpnjmQso1zFzUu03QkNmgvhZiYlEeliaU7/0N3siqKMcDeRBqpn7GGq96q90CVzLXvjhA29rDD5JjjMlwWFOU03cFt+Q2EemWcHa916I2Xaf9IKPyBRE5/xqz+o/OH4MoDpM4I1ktPON/BUzyH5VbND0o8znJSFYBxJrXcHNtIHxK67eTJRXiRVAIMAwDMtvDZkCgDADstBiCAh2Cmp+CE3kNQCmbZ7BC7t6WnbPddcer+dfk2ZrMLBl3HHsgU4t06tOwcXJfXGkEeJjrVmieH9UeoCDHjchGkwtHuquBe7lEP1m6OBsm5pjWdg03xQ+NHWqY1TGs0xI9z/68qHw7Nl6vUKG9JjEq8GYIbp3O/aJJo8owIlOGztXtXT7HuxpXpd8N/uQ3Od+aMvLNx/lBQenmHLtdkrzzP6YHWqkV1fHDLDf0GCS5FZXUkTpL4rIv+GBccRVjheQVySUYstwMnrbKPHXPoe8D9QdwPvwCHzzu/Ai++1r1KB969gHkn9vTLWVJ4NiFAu234QxvfpPl/CxVCgfm/vYZSIZHDHR1l+/DmA=
